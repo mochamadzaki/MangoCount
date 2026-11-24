@@ -328,6 +328,67 @@ section[data-testid="stSidebar"]
     -webkit-text-fill-color: #111111 !important;
     opacity: 1 !important;
 }
+
+/* FIX LABEL DAN DROPDOWN MANGOCOUNT */
+
+/* Label Model, Path Bobot, Confidence, Resolusi, Profil Kematangan */
+[data-testid="stWidgetLabel"],
+[data-testid="stWidgetLabel"] *,
+.stSelectbox label,
+.stTextInput label,
+.stSlider label,
+.stNumberInput label,
+.stCheckbox label,
+.stFileUploader label,
+.stRadio label {
+    color: #111827 !important;
+    -webkit-text-fill-color: #111827 !important;
+    opacity: 1 !important;
+    font-weight: 600 !important;
+}
+
+/* Semua teks pada menu dropdown */
+[data-baseweb="popover"],
+[data-baseweb="popover"] *,
+[data-baseweb="menu"],
+[data-baseweb="menu"] *,
+[role="listbox"],
+[role="listbox"] *,
+[role="option"],
+[role="option"] * {
+    color: #111827 !important;
+    -webkit-text-fill-color: #111827 !important;
+    opacity: 1 !important;
+}
+
+/* Hover pilihan dropdown */
+[data-baseweb="popover"] [role="option"]:hover,
+[role="option"]:hover {
+    background: #DCFCE7 !important;
+    color: #166534 !important;
+}
+
+/* Pilihan yang sedang aktif */
+[role="option"][aria-selected="true"] {
+    background: #E0F2F1 !important;
+    color: #134E4A !important;
+}
+
+/* Label dan tombol upload */
+[data-testid="stFileUploaderDropzone"],
+[data-testid="stFileUploaderDropzone"] * {
+    color: #111827 !important;
+    -webkit-text-fill-color: #111827 !important;
+    opacity: 1 !important;
+}
+
+/* Tombol pilih file */
+[data-testid="stFileUploaderDropzone"] button {
+    background: #FFFFFF !important;
+    color: #111827 !important;
+    border: 1px solid #CBD5E1 !important;
+}
+
 </style>
 """
 st.markdown(CSS, unsafe_allow_html=True)
