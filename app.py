@@ -303,6 +303,31 @@ section[data-testid="stSidebar"]
     color: #111827 !important;
     opacity: 1 !important;
 }
+/* FORCE BLACK COLOR FOR ALL WIDGET LABELS */
+[data-testid="stMain"] [data-testid="stWidgetLabel"],
+[data-testid="stMain"] [data-testid="stWidgetLabel"] *,
+[data-testid="stMain"] label,
+[data-testid="stMain"] label *,
+[data-testid="stMain"] [data-testid="stFileUploaderDropzoneInstructions"],
+[data-testid="stMain"] [data-testid="stFileUploaderDropzoneInstructions"] * {
+    color: #111111 !important;
+    -webkit-text-fill-color: #111111 !important;
+    opacity: 1 !important;
+}
+
+/* INPUT LABEL */
+[data-testid="stMain"] [data-testid="stWidgetLabel"] p {
+    color: #111111 !important;
+    font-weight: 600 !important;
+}
+
+/* UPLOAD DESCRIPTION */
+[data-testid="stMain"] [data-testid="stFileUploaderDropzone"] span,
+[data-testid="stMain"] [data-testid="stFileUploaderDropzone"] small {
+    color: #111111 !important;
+    -webkit-text-fill-color: #111111 !important;
+    opacity: 1 !important;
+}
 </style>
 """
 st.markdown(CSS, unsafe_allow_html=True)
