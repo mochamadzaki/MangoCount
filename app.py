@@ -274,6 +274,35 @@ section[data-testid="stSidebar"]
     padding-top: 14px !important;
     position: relative !important;
 }
+/* LABEL PENGATURAN ANALISIS - HITAM */
+[data-testid="stWidgetLabel"],
+[data-testid="stWidgetLabel"] *,
+.stTextInput label,
+.stSelectbox label,
+.stSlider label,
+.stNumberInput label,
+.stCheckbox label,
+.stFileUploader label,
+.stRadio label {
+    color: #111827 !important;
+    opacity: 1 !important;
+    -webkit-text-fill-color: #111827 !important;
+    font-weight: 600 !important;
+}
+
+/* TEKS KETERANGAN */
+[data-testid="stCaptionContainer"],
+[data-testid="stCaptionContainer"] *,
+.stMarkdown p {
+    color: #374151 !important;
+}
+
+/* LABEL UPLOAD */
+[data-testid="stFileUploader"] label,
+[data-testid="stFileUploader"] label * {
+    color: #111827 !important;
+    opacity: 1 !important;
+}
 </style>
 """
 st.markdown(CSS, unsafe_allow_html=True)
