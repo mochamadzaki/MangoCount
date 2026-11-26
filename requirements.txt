@@ -7,3 +7,5 @@ imageio
 imageio-ffmpeg
 
 lap==0.5.13
+streamlit-webrtc==0.79.1
+av>=15.1.0
