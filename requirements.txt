@@ -5,3 +5,5 @@ pandas
 ultralytics
 imageio
 imageio-ffmpeg
+
+lap==0.5.13
