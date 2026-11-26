@@ -8,6 +8,9 @@ import cv2
 import numpy as np
 import pandas as pd
 import streamlit as st
+import threading
+import av
+from streamlit_webrtc import VideoProcessorBase, webrtc_streamer
 
 from mango import ripeness as rp
 from mango.pipeline import GENERIC_FRUIT, MangoPipeline
@@ -827,32 +830,98 @@ elif mode == "Video":
             st.video(vid)
 
 elif mode == "Live":
-    st.caption("Deteksi langsung dari webcam — matikan toggle untuk berhenti.")
-    if st.toggle("🟢 Aktifkan webcam", key="live_on"):
-        pipe.reset_tracking()
-        pipe.min_hits, pipe.fps_eff, pipe.min_peak_conf = 3, 10.0, 0.0
-        cap = cv2.VideoCapture(0)
-        if not cap.isOpened():
-            st.error("Webcam tidak tersedia.")
-        else:
-            slot = st.empty()
-            info = st.empty()
-            while cap.isOpened():
-                ok, frame = cap.read()
-                if not ok:
-                    break
-                fruits = pipe.track_frame(frame)
-                n, counts = pipe.summarize_tracks()
-                slot.image(cv2.cvtColor(pipe.draw(frame, fruits, show_total=n), cv2.COLOR_BGR2RGB),
-                           use_container_width=True)
-                info.markdown(verdict_card(counts, n) + stat_card(n, counts, "mangga unik"),
-                              unsafe_allow_html=True)
-            cap.release()
-    else:
-        howto_steps([("Aktifkan webcam", "Tekan toggle di atas, izinkan akses kamera."),
-                     ("Arahkan ke pohon", "Gerakkan kamera pelan ke semua sisi."),
-                     ("Pantau real-time", "Jumlah dan status diperbarui otomatis.")])
+    st.caption("Deteksi langsung menggunakan kamera laptop melalui browser.")
 
+    live_on = st.toggle("🟢 Aktifkan kamera laptop", key="live_on")
+
+    if live_on:
+
+        if not st.session_state.get("_live_initialized", False):
+            pipe.reset_tracking()
+            pipe.min_hits = 3
+            pipe.fps_eff = 10.0
+            pipe.min_peak_conf = 0.0
+            st.session_state["_live_initialized"] = True
+
+        class MangoLiveProcessor(VideoProcessorBase):
+
+            def __init__(self):
+                self.lock = threading.Lock()
+                self.total = 0
+                self.counts = {}
+
+            def recv(self, frame):
+                image = frame.to_ndarray(format="bgr24")
+
+                with self.lock:
+                    fruits = pipe.track_frame(image)
+
+                    total, counts = pipe.summarize_tracks()
+
+                    output = pipe.draw(
+                        image,
+                        fruits,
+                        show_total=total
+                    )
+
+                    self.total = total
+                    self.counts = dict(counts)
+
+                return av.VideoFrame.from_ndarray(
+                    output,
+                    format="bgr24"
+                )
+
+        ctx = webrtc_streamer(
+            key="mangocount-live-camera",
+            video_processor_factory=MangoLiveProcessor,
+            rtc_configuration={
+                "iceServers": [
+                    {"urls": ["stun:stun.l.google.com:19302"]}
+                ]
+            },
+            media_stream_constraints={
+                "video": True,
+                "audio": False
+            },
+            async_processing=True,
+        )
+
+        @st.fragment(run_every=1)
+        def live_summary():
+            processor = ctx.video_processor
+
+            if processor is None:
+                st.info("Tekan START dan izinkan akses kamera laptop.")
+                return
+
+            with processor.lock:
+                total = processor.total
+                counts = processor.counts.copy()
+
+            st.markdown(
+                verdict_card(counts, total),
+                unsafe_allow_html=True
+            )
+
+            st.markdown(
+                stat_card(total, counts, "mangga unik"),
+                unsafe_allow_html=True
+            )
+
+        live_summary()
+
+    else:
+        if st.session_state.get("_live_initialized", False):
+            pipe.reset_tracking()
+            st.session_state["_live_initialized"] = False
+
+        howto_steps([
+            ("Aktifkan kamera", "Aktifkan toggle dan tekan START."),
+            ("Arahkan ke pohon", "Izinkan browser mengakses kamera laptop."),
+            ("Deteksi otomatis", "YOLO11 mendeteksi mangga dan ByteTrack memberikan ID."),
+            ("Hasil analisis", "Jumlah mangga dan kategori kematangan ditampilkan.")
+        ])
 elif mode == "Ukur Multi-Sudut":
     st.subheader("📐 Pengukuran Multi-Sudut")
     st.markdown("""
